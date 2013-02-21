@@ -3,7 +3,7 @@
 #
 # (see bottom of file for how this definition is used)
 
-define ssh_user($comment,$uid,$group,$mail,$shell="/bin/bash") {
+define ssh_user($comment,$uid=undef,$group,$mail,$shell="/bin/bash",$pub_key) {
 
   # create the user
   user { "$name":
@@ -27,11 +27,11 @@ define ssh_user($comment,$uid,$group,$mail,$shell="/bin/bash") {
     require => User[$name]
   }
   file { "/home/$name/.ssh/authorized_keys":
-    source  => "puppet:///sshusers/authorized_keys/$name",
-    mode    => 400,
-    owner   => $name,
-    group   => $group,
-    require => File["/home/$name/.ssh"]
+    content  => $pub_key,
+    mode     => 400,
+    owner    => $name,
+    group    => $group,
+    require  => File["/home/$name/.ssh"]
   }
 
   mailalias { "$name":
